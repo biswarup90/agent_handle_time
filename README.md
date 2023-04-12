@@ -4,36 +4,36 @@ Given an agent is assigned a contact, we want to pRedict how long it will take t
 ## About The Data
 From our systems we obtained data in various formats & after various relevant aggregations & filters we dumped it into csv. This is the starting point of consumption of this data. 
 The columns are:
- 1.   id                         145303 non-null  object
- 2.  matchedSkills              145303 non-null  object -> subset of all the skills required for this contact among all the skills this agent has 
- 3.   lastTeam                   145303 non-null  object -> the team to which the agent belongs
- 4.   requiredSkills             145303 non-null  object -> skill requirements from the contact
- 5.  createdTime                145303 non-null  int64  -> time when the contact entered the system
- 6.   endedTime                  145303 non-null  int64  -> wrap up time of the contact(we will get rid of this in the subsequent data processing)
- 7.   origin                     145303 non-null  object -> customer's identifier(phone number, email-id, chat id)
- 8.   destination                145303 non-null  object -> toll free route point destination where the customer connects
- 9.   contactReason              30692 non-null   object -> only relevant in chat, denotes the reason for the cotnact
- 10.   channelSubType             145303 non-null  object -> finer distinction among telephony, chat & email
- 11.  channelType                145303 non-null  object -> telephony, chat & email
- 12.  holdCount                  145303 non-null  int64  -> number of times customer was put on hold
- 13.  holdDuration               145303 non-null  int64  -> how long the hold episodes lasted
- 14.  selfserviceCount           145303 non-null  int64  -> how many times customer encountered self service(IVR)
- 15.  selfserviceDuration        145303 non-null  int64  -> how long the self-service episodes lasted
- 16.  connectedCount             145303 non-null  int64  -> how many times this customer connected to an agent, can be multiple if he/she hopped among queues. 
- 17.  connectedDuration          145303 non-null  int64  -> our prediction variable. How long customer and agent were connected.
- 18.  ringingDuration            145303 non-null  int64  -> how long it took to connect to system
- 19.  queueDuration              145303 non-null  int64  -> how long was customer waiting in queue
- 20.  queueCount                 145303 non-null  int64  -> how many times customer was queued
- 21.  routingType                144790 non-null  object -> internal algorithm of the contact center
- 22.  isHandledByPreferredAgent  145303 non-null  bool   -> one particular feature of the contact center where customers can choose their agent 
- 23.  lastQueue                  145303 non-null  object -> queue from which this agent picked up this contact
- 24.  contributors               145303 non-null  object -> agent
- 25.  skillDiff                  145303 non-null  float64 -> difference in skill b/w agent & contact's requirement
- 26.  queue                      145303 non-null  object -> queue(engineered column)
- 27.  agent                      145302 non-null  object -> agent(engineered column)
- 28.  team                       145303 non-null  object -> team(engineered column)
- 29.  rs                         20081 non-null   object -> required skill(engineered column)
- 30.  ms                         20081 non-null   object -> matched skills(engineered column)
+ 1.   id
+ 2.   matchedSkills:  				subset of all the skills required for this contact among all the skills this agent has 
+ 3.   lastTeam: 					the team to which the agent belongs
+ 4.   requiredSkills: 				skill requirements from the contact
+ 5.   createdTime: 					time when the contact entered the system
+ 6.   endedTime: 					wrap up time of the contact(we will get rid of this in the subsequent data processing)
+ 7.   origin: 						customer's identifier(phone number, email-id, chat id)
+ 8.   destination: 					toll free route point destination where the customer connects
+ 9.   contactReason: 				only relevant in chat, denotes the reason for the cotnact
+ 10.  channelSubType: 				finer distinction among telephony, chat & email
+ 11.  channelType: 					telephony, chat & email
+ 12.  holdCount: 					number of times customer was put on hold
+ 13.  holdDuration: 				how long the hold episodes lasted
+ 14.  selfserviceCount: 			how many times customer encountered self service(IVR)
+ 15.  selfserviceDuration: 			how long the self-service episodes lasted
+ 16.  connectedCount: 				how many times this customer connected to an agent, can be multiple if he/she hopped among queues. 
+ 17.  connectedDuration: 			our prediction variable. How long customer and agent were connected.
+ 18.  ringingDuration: 				how long it took to connect to system
+ 19.  queueDuration: 				how long was customer waiting in queue
+ 20.  queueCount: 					how many times customer was queued
+ 21.  routingType: 					internal algorithm of the contact center
+ 22.  isHandledByPreferredAgent: 	one particular feature of the contact center where customers can choose their agent 
+ 23.  lastQueue: 					queue from which this agent picked up this contact
+ 24.  contributors: 				the agent
+ 25.  skillDiff: 					difference in skill b/w agent & contact's requirement
+ 26.  queue: 						queue(engineered column)
+ 27.  agent: 						agent(engineered column)
+ 28.  team: 						team(engineered column)
+ 29.  rs: 							required skill(engineered column)
+ 30.  ms: 							matched skills(engineered column)
 
 This data is for a particular organisation using this contact center. Each row represents an interaction between an agent and a customer(contact). This contact center supports 3 media channels - telephony, chat & email.
 
@@ -49,6 +49,11 @@ The project is designed to consume data from data.csv & go through various steps
 6. `all_model.py` - is a master file for training & evaluation of each model. One can do hyper parameter tuning here as well, or use the parameters found in the individual files. Finally we can also do split modelling based on the channel type of contact, because a email's connected duration will typically be very different from a telephony contact's connected duration.
 
 Hence starting with data.csv we can progressively run each step of imputation, feature engineering, encoding, eda & finally modelling to get the results. Each step produces an output which is consumed by the next step and so on.
+
+## Result
+We observed RandomForestRegressor is giving us the best results on the data.
+Our metrics were R2 and RMSE(Seconds)
+![plot](./result/Screenshot 2023-04-12 at 12.54.02 PM.png)
 
 ## Authors
 Biswarup Das Sarma(biswarup.cst@gmail.com)
