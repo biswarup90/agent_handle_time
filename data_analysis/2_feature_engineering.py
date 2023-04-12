@@ -5,7 +5,7 @@ def engineered():
     df_train = pd.read_csv('../data/{0}/imputed_data_train.csv'.format(SOURCE))
     df_test = pd.read_csv('../data/{0}/imputed_data_test.csv'.format(SOURCE))
 
-    if SOURCE == 'maersk':
+    if SOURCE == 'm':
         df_train['createdTime'] = pd.to_datetime(df_train['createdTime'], format='%d/%m/%Y %H:%M')
     df_train['createdTime'] = pd.to_datetime(df_train['createdTime'], unit='ms')
 
@@ -17,14 +17,14 @@ def engineered():
     df_train['createdTime_minute'] = df_train['createdTime'].dt.minute
     df_train['createdTime_dayofweek'] = df_train['createdTime'].dt.dayofweek
 
-    if SOURCE=='lion_king':
+    if SOURCE=='l':
         df_train_skills = df_train['rs'].str.get_dummies(sep=',')
         df_train = pd.concat([df_train, df_train_skills], axis=1).drop('rs', 1)
 
     df_train = df_train.drop(['createdTime'], axis=1)
     print(df_train.info())
 
-    if SOURCE == 'maersk':
+    if SOURCE == 'm':
         df_test['createdTime'] = pd.to_datetime(df_test['createdTime'], format='%d/%m/%Y %H:%M')
     df_test['createdTime'] = pd.to_datetime(df_test['createdTime'], unit='ms')
 
@@ -36,7 +36,7 @@ def engineered():
     df_test['createdTime_minute'] = df_test['createdTime'].dt.minute
     df_test['createdTime_dayofweek'] = df_test['createdTime'].dt.dayofweek
 
-    if SOURCE=='lion_king':
+    if SOURCE=='l':
         df_test_skills = df_test['rs'].str.get_dummies(sep=',')
         df_test = pd.concat([df_test, df_test_skills], axis=1).drop('rs', 1)
 

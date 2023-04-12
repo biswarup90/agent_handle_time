@@ -1,4 +1,4 @@
-# Prediction of Handle Time of a Contact by an Agent in Webex Contact Center
+# Prediction of Handle Time of a Contact by an Agent in a Contact Center
 Given an agent is assigned a contact, we want to pRedict how long it will take to handle the contact using metadata about an on-going interaction such as agent, skills, date and time, queue in which the call has landed, priority of contact, customer id, agent details etc.
 
 ## About The Data
@@ -37,7 +37,7 @@ The columns are:
 
 This data is for a particular organisation using this contact center. Each row represents an interaction between an agent and a customer(contact). This contact center supports 3 media channels - telephony, chat & email.
 
-NOTE: in the constants file you will notice two names frequently appearing - lion king and maersk. These are two orgs for which we got data initially. Finally we got proper data only for lion king and all our modelling are based on that.
+NOTE: in the constants file you will notice two names frequently appearing - lion king and m. These are two orgs for which we got data initially. Finally we got proper data only for lion king and all our modelling are based on that.
 
 ## How to Execute the project
 The project is designed to consume data from data.csv & go through various steps. Each of the steps are executed in a file. Following are the details:

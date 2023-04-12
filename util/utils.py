@@ -102,7 +102,7 @@ def diagnostics(df):
 
 
 def extract_skills(df):
-    if SOURCE == 'maersk':
+    if SOURCE == 'm':
         for index, row in df.iterrows():
             # print(row['Skills'])
             if (pd.isna(row['skills'])):

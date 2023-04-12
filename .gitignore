@@ -1,0 +1,7 @@
+.DS_Store
+.idea/
+auth/
+data/
+get_data/
+plots/
+saved_model/
