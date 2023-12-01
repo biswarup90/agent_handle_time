@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import ydata_profiling.profile_report as pp
-from util.utils import get_encoded_data, get_engineered_data_train
+from util.utils import get_encoded_data, get_engineered_data_train, get_unique_values_of_col
 import seaborn as sns
 import dtale
 import sweetviz as sv
@@ -11,23 +11,33 @@ from constants.constants import *
 
 
 def eda():
-    ''''''
-    # 1. discard selfserviceDuration, ringingDuration, queueDuration
-
-    # df_test.drop(['selfserviceDuration', 'ringingDuration', 'queueDuration']) - adds no value
-    # drop channel type - channel sub type captures all the info provided by channel type
-    # origin, destination, queue, agent, contactReason, channelType are highly correlated columns
+    df = get_encoded_data(False)[0]
+    #df = df[df['createdTime_hour'] == 5]
+    #print(df.info())
+    #print(get_unique_values_of_col(df, 'createdTime_week'))
+    df.plot.scatter(x='queue_encoded', y='connectedDuration', s=1)
+    plt.title('Relationship between Agent and Handle time')
+    plt.xlabel('Queue')
+    plt.ylabel('Connected Duration')
+    plt.show()
 
 
 def histograms():
-    df = get_encoded_data()[0]
-    df['destination_encoded'].hist(figsize=(20, 15))
+    df = get_encoded_data(False)[0]
+    df['connectedDuration'].hist(figsize=(20, 15), bins=100)
+    plt.title('Distribution of Connected Duration')
+    plt.xlabel('Connected Duration')
+    plt.ylabel('Frequency')
     plt.show()
 
 
 def basic():
     df = get_encoded_data(False)[0]
-    print(df.describe())
+    print(df['connectedDuration'].describe())
+    print(df['connectedDuration'].std())
+    #x = df.reset_index().plot.scatter(x='index', y='connectedDuration')
+    #print(type(x))
+    #plt.show()
 
 
 def find_outlier(col):
@@ -39,9 +49,9 @@ def find_outlier(col):
 
 
 def correlation():
-    df = get_encoded_data(False)[0]
-    corr = df.corr()
-    print(corr[Y].abs().sort_values(ascending=False))
+    df = get_encoded_data(True)[0]
+    #corr = df.corr()
+    #print(corr[Y].abs().sort_values(ascending=False))
     corr = df.corr()
     sns.heatmap(corr, cmap="Blues", annot=True)
     plt.show()
@@ -57,9 +67,9 @@ def histograms_for_y():
 def pandasprofiling():
     df = get_encoded_data(False)[0]
     profile = pp.ProfileReport(df)
-    profile.to_file("../plots/{0}/output.html".format(SOURCE))
+    profile.to_file("../plots/{0}/output.html".format(DATA_SOURCE))
     sweet_report = sv.analyze(df)
-    sweet_report.show_html('../plots/{0}/sweet_report_output.html'.format(SOURCE))
+    sweet_report.show_html('../plots/{0}/sweet_report_output.html'.format(DATA_SOURCE))
 
 
 def sns_plots():
@@ -69,4 +79,10 @@ def sns_plots():
     plt.show()
 
 
-pandasprofiling()
+def getDataGroupedByAgent():
+    df = get_encoded_data(False)[0]
+    print(df.agent_encoded.value_counts())
+    print(df.shape)
+
+
+eda()

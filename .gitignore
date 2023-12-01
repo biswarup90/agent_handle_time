@@ -2,6 +2,7 @@
 .idea/
 auth/
 data/
-get_data/
 plots/
 saved_model/
+ewt/
+data_analysis/

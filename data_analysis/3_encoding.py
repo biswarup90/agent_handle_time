@@ -5,10 +5,10 @@ from constants.constants import *
 
 
 def encoder():
-    df_train = pd.read_csv('../data/{0}/engineered_data_train.csv'.format(SOURCE))
-    df_test = pd.read_csv('../data/{0}/engineered_data_test.csv'.format(SOURCE))
+    df_train = pd.read_csv('../data/{0}/engineered_data_train.csv'.format(DATA_SOURCE))
+    df_test = pd.read_csv('../data/{0}/engineered_data_test.csv'.format(DATA_SOURCE))
     for cols in TARGET_ENCODING_COLS:
-        encoder = TargetEncoder(smoothing=2)
+        encoder = TargetEncoder(smoothing=5)
         df_train['{0}_encoded'.format(cols)] = encoder.fit_transform(df_train[cols], df_train[Y])
         df_test['{0}_encoded'.format(cols)] = encoder.transform(df_test[cols], df_test[Y])
 
@@ -30,8 +30,8 @@ def encoder():
     print(df_train.info())
     print(df_test.info())
 
-    df_train.to_csv('../data/{0}/encoded_data_train.csv'.format(SOURCE), index=False)
-    df_test.to_csv('../data/{0}/encoded_data_test.csv'.format(SOURCE), index=False)
+    df_train.to_csv('../data/{0}/encoded_data_train.csv'.format(DATA_SOURCE), index=False)
+    df_test.to_csv('../data/{0}/encoded_data_test.csv'.format(DATA_SOURCE), index=False)
 
 
 encoder()

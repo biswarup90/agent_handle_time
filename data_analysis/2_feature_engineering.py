@@ -2,8 +2,8 @@ import pandas as pd
 from constants.constants import *
 
 def engineered():
-    df_train = pd.read_csv('../data/{0}/imputed_data_train.csv'.format(SOURCE))
-    df_test = pd.read_csv('../data/{0}/imputed_data_test.csv'.format(SOURCE))
+    df_train = pd.read_csv('../data/{0}/imputed_data_train.csv'.format(DATA_SOURCE))
+    df_test = pd.read_csv('../data/{0}/imputed_data_test.csv'.format(DATA_SOURCE))
 
     if SOURCE == 'm':
         df_train['createdTime'] = pd.to_datetime(df_train['createdTime'], format='%d/%m/%Y %H:%M')
@@ -20,7 +20,7 @@ def engineered():
     if SOURCE=='l':
         df_train_skills = df_train['rs'].str.get_dummies(sep=',')
         df_train = pd.concat([df_train, df_train_skills], axis=1).drop('rs', 1)
-
+    #df_train = df_train.drop('rs', 1)
     df_train = df_train.drop(['createdTime'], axis=1)
     print(df_train.info())
 
@@ -39,12 +39,13 @@ def engineered():
     if SOURCE=='l':
         df_test_skills = df_test['rs'].str.get_dummies(sep=',')
         df_test = pd.concat([df_test, df_test_skills], axis=1).drop('rs', 1)
+    #df_test = df_test.drop('rs', 1)
 
     df_test = df_test.drop(['createdTime'], axis=1)
     print(df_test.info())
 
-    df_train.to_csv('../data/{0}/engineered_data_train.csv'.format(SOURCE), index=False)
-    df_test.to_csv('../data/{0}/engineered_data_test.csv'.format(SOURCE), index=False)
+    df_train.to_csv('../data/{0}/engineered_data_train.csv'.format(DATA_SOURCE), index=False)
+    df_test.to_csv('../data/{0}/engineered_data_test.csv'.format(DATA_SOURCE), index=False)
     #print(df['agent'].value_counts(normalize=True))
     #print(df['queue'].unique())
     #print(len(df['agent'].unique()))

@@ -1,11 +1,11 @@
 import pandas as pd
-
+import matplotlib.pyplot as plt
 pd.options.mode.chained_assignment = None  # default='warn'
 from sklearn.decomposition import PCA
 from scipy.special import boxcox
 import numpy as np
 from constants.constants import *
-
+from matplotlib.patches import Rectangle
 
 def compute_skills_diff(df):
     for index, row in df.iterrows():
@@ -54,15 +54,28 @@ def extract_seconds(df, field, toField):
 
 def get_queue_and_agent_and_team(df):
     for index, row in df.iterrows():
-        contributors_size = len(row['contributors'])
 
+        contributor_list = []
+        df_con = pd.DataFrame(row['contributors'], columns=['id'])
+        if df_con.empty:
+            continue
+        for index2, row2 in df_con.iterrows():
+            contributor_list.append(row2['id'])
+        if('' in contributor_list):
+            contributor_list.remove('')
+        contributors_size = len(contributor_list)
+        print(contributor_list)
         df_queue = pd.DataFrame(row['lastQueue'], columns=['id'], index=[0])
         df_team = pd.DataFrame(row['lastTeam'], columns=['id'], index=[0])
-        df_agent = pd.DataFrame(row['contributors'][contributors_size - 1], columns=['id'], index=[0])
+        df_site = pd.DataFrame(row['lastSite'], columns=['id'], index=[0])
+        df_agent = pd.DataFrame(row['contributors'][contributors_size-1], columns=['id'], index=[0])
+        #print("Agent")
+        #print(df_agent)
 
         df.loc[index, 'queue'] = df_queue.iloc[0]['id']
         df.loc[index, 'agent'] = df_agent.iloc[0]['id']
         df.loc[index, 'team'] = df_team.iloc[0]['id']
+        df.loc[index, 'site'] = df_site.iloc[0]['id']
 
     return df
 
@@ -74,14 +87,18 @@ def delete_cols(df):
 def agent_queue_diagnostics(df):
     empty_agent = []
     empty_queue = []
+    multi_agent = []
 
     for index, row in df.iterrows():
-        # print(row['Contributors'])
         contributors_size = len(row['contributors'])
+        #print(contributors_size)
         if ((contributors_size == 0)):
             empty_agent.append(row['id'])
-
-    df = df[~(df.id.isin(empty_agent))]
+        if ((contributors_size > 1)):
+            multi_agent.append(row['id'])
+    #print(empty_agent)
+    #df = df[~(df.id.isin(empty_agent))]
+    #df = df[~(df.id.isin(multi_agent))]
 
     for index, row in df.iterrows():
         queue_size = len(row['lastQueue'])
@@ -127,7 +144,7 @@ def get_unique_values_of_col(df, col):
 
 
 def get_engineered_data_train():
-    df_train = pd.read_csv('../data/{0}/engineered_data_train.csv'.format(SOURCE))
+    df_train = pd.read_csv('../data/{0}/engineered_data_train.csv'.format(DATA_SOURCE))
     pd.set_option('display.width', 400)
     pd.set_option('display.max_columns', 15)
     df_train.info()
@@ -135,10 +152,12 @@ def get_engineered_data_train():
 
 
 def get_encoded_data(shouldFilterCol=True):
-    df_train = pd.read_csv('../data/{0}/encoded_data_train.csv'.format(SOURCE))
-    df_train = df_train[TOP_COLS] if shouldFilterCol else df_train
-    df_test = pd.read_csv('../data/{0}/encoded_data_test.csv'.format(SOURCE))
-    df_test = df_test[TOP_COLS] if shouldFilterCol else df_test
+    df_train = pd.read_csv('../data/{0}/encoded_data_train.csv'.format(DATA_SOURCE))
+    df_train = df_train[RF_FEATURE_IMP] if shouldFilterCol else df_train
+    #df_train = df_train.drop(UNWANTED_COLS, axis=1) if shouldFilterCol else df_train
+    df_test = pd.read_csv('../data/{0}/encoded_data_test.csv'.format(DATA_SOURCE))
+    df_test = df_test[RF_FEATURE_IMP] if shouldFilterCol else df_test
+    #df_test = df_test.drop(UNWANTED_COLS, axis=1) if shouldFilterCol else df_test
     pd.set_option('display.width', 400)
     pd.set_option('display.max_columns', 15)
     df_train.info()
@@ -146,7 +165,7 @@ def get_encoded_data(shouldFilterCol=True):
 
 
 def get_encoded_data_test():
-    df_test = pd.read_csv('../data/{0}/encoded_data_test.csv'.format(SOURCE))
+    df_test = pd.read_csv('../data/{0}/encoded_data_test.csv'.format(DATA_SOURCE))
     pd.set_option('display.width', 400)
     pd.set_option('display.max_columns', 15)
     return df_test
@@ -173,3 +192,17 @@ def split_into_channel(df):
     df_chat = df[df['channelType_chat'] == 1]
 
     return df_telephony, df_email, df_chat
+
+def generate_hist(y_train, x_train, y_test, x_test, pred, title="Histogram"):
+    plt.hist(pred, bins=100, edgecolor='black', color='green')
+    #plt.hist(y_train['connectedDuration'], color='red', bins=100)
+    plt.hist(y_test['connectedDuration'], color='blue', bins=100)
+
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    colors = ["blue", "green"]
+    handles = [Rectangle((0, 0), 1, 1, color=c, ec="k") for c in colors]
+    labels = ["Actual Distribution", "Predicted Distribution"]
+    plt.legend(handles, labels)
+    plt.title(title)
+    plt.show()

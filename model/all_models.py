@@ -14,6 +14,7 @@ from scipy.special import inv_boxcox
 from sklearn.metrics import mean_squared_error
 from constants.constants import *
 import pickle
+
 model_names = ['LinearRegression', 'ridge', 'lasso', 'ElasticNet', 'DecisionTree', 'RandomForestRegressor', 'XGBoost',
                'GradientBoostingRegressor', 'KNNRegressor']
 
@@ -107,7 +108,8 @@ x_train_telephony, y_train_telephony, x_test_telephony, y_test_telephony = \
     split_into_x_y(df_train_telephony, df_test_telephony, isTransformY=isTransformY)
 x_train_email, y_train_email, x_test_email, y_test_email = split_into_x_y(df_train_email, df_test_email,
                                                                           isTransformY=isTransformY)
-x_train_chat, y_train_chat, x_test_chat, y_test_chat = split_into_x_y(df_train_chat, df_test_chat, isTransformY=isTransformY)
+x_train_chat, y_train_chat, x_test_chat, y_test_chat = split_into_x_y(df_train_chat, df_test_chat,
+                                                                      isTransformY=isTransformY)
 
 x_train_channelwise = [x_train_telephony, x_train_email, x_train_chat]
 x_test_channelwise = [x_test_telephony, x_test_email, x_test_chat]
@@ -181,7 +183,7 @@ def train_model(isWithGrid, isSplitModelling):
 def predict(isSplitModelling):
     if isSplitModelling:
         for m in model_names:
-            print("Model:",m)
+            print("Model:", m)
             predicted = []
             ground_truth = []
             for i in range(3):
@@ -242,10 +244,11 @@ def train_and_predict(isWithGrid, isSplitModelling):
                 pred = trained_model.predict(x_test_channelwise[i])
                 y_predicted = inv_boxcox(pred, BOX_COX_LAMBDA) if isTransformY else pred
                 predicted.extend(y_predicted)
-                ground_truth.extend(inv_boxcox(y_test_channelwise[i].to_numpy(), BOX_COX_LAMBDA) if isTransformY else y_test_channelwise[i].to_numpy())
+                ground_truth.extend(inv_boxcox(y_test_channelwise[i].to_numpy(), BOX_COX_LAMBDA) if isTransformY else
+                                    y_test_channelwise[i].to_numpy())
             mse = mean_squared_error(ground_truth, predicted)
             r2 = r2_score(ground_truth, predicted)
-            print("RMSE ", np.sqrt(mse)/1000, " Sec")
+            print("RMSE ", np.sqrt(mse) / 1000, " Sec")
             print("R2", r2, "\n")
 
     else:
@@ -255,9 +258,10 @@ def train_and_predict(isWithGrid, isSplitModelling):
             predicted = []
             model = grid_models[m]
             model_parameter = model_parameters[m]
-            trained_model = grid(model, model_parameter, x_train, y_train) if isWithGrid else model_training(model,
-                                                                                                             x_train,
-                                                                                                             y_train)
+            trained_model = grid(grid_models[m], model_parameter, x_train, y_train) if isWithGrid else model_training(
+                fixed_models[m],
+                x_train,
+                y_train)
             if isWithGrid:
                 scores.append({
                     'model': m,
@@ -275,7 +279,7 @@ def train_and_predict(isWithGrid, isSplitModelling):
             predicted.extend(y_predicted)
             mse = mean_squared_error(ground_truth, predicted)
             r2 = r2_score(ground_truth, predicted)
-            print("RMSE ", np.sqrt(mse)/1000, " Sec")
+            print("RMSE ", np.sqrt(mse) / 1000, " Sec")
             print("R2 ", r2, "\n")
 
 
@@ -289,6 +293,6 @@ def load_model(name):
     return loaded_model
 
 
-#train_model(False, False)
-#predict(False)
+# train_model(False, False)
+# predict(False)
 train_and_predict(False, False)
