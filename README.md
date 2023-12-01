@@ -1,5 +1,7 @@
 # Prediction of Handle Time of a Contact by an Agent in a Contact Center
-Given an agent is assigned a contact, we want to Predict how long it will take to handle the contact using metadata about an on-going interaction such as agent, skills, date and time, queue in which the call has landed, priority of contact, customer id, agent details etc.
+
+Given an agent is assigned a contact, we want to predict how long it will take to handle the contact using metadata about an on-going interaction such as agent, skills, date and time, queue in which the call has landed, priority of contact, customer id, agent details etc.
+
 
 ## About The Data
 From our systems we obtained data in various formats & after various relevant aggregations & filters we dumped it into csv. This is the starting point of consumption of this data. 
